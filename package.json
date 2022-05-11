@@ -1,6 +1,6 @@
 {
-  "name": "react-native-qq-lib",
-  "version": "3.0.9",
+  "name": "@wuye/react-native-qq-lib",
+  "version": "1.0.0",
   "description": "QQ Login and Share support in React Native.",
   "main": "index.js",
   "typings": "index.d.ts",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/haxibiao/react-native-qq-lib.git"
+    "url": "git+https://github.com/yangdong-wuye/react-native-qq-lib.git"
   },
   "keywords": [
     "react-native",
@@ -27,7 +27,7 @@
     "react-native": "^0.61.5"
   },
   "bugs": {
-    "url": "https://github.com/haxibiao/react-native-qq-lib/issues"
+    "url": "https://github.com/yangdong-wuye/react-native-qq-lib/issues"
   },
-  "homepage": "https://github.com/haxibiao/react-native-qq-lib#readme"
+  "homepage": "https://github.com/yangdong-wuye/react-native-qq-lib#readme"
 }

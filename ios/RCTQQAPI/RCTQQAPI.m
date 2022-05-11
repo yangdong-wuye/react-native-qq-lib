@@ -62,15 +62,11 @@ RCT_EXPORT_MODULE();
     return YES;
 }
 
-- (void)handleOpenURL:(NSNotification *)note
+- (BOOL)handleOpenURL:(NSNotification *)note
 {
     NSDictionary *userInfo = note.userInfo;
     NSString *url = userInfo[@"url"];
-    if ([TencentOAuth HandleOpenURL:[NSURL URLWithString:url]]) {
-    }
-    else {
-        [QQApiInterface handleOpenURL:[NSURL URLWithString:url] delegate:self];
-    }
+	return [QQApiInterface handleOpenUniversallink:[NSURL URLWithString:url] delegate:self] || [QQApiInterface handleOpenURL:[NSURL URLWithString:url] delegate:self];;
 }
 
 RCT_EXPORT_METHOD(isQQInstalled:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
