@@ -16,7 +16,7 @@
     "ios",
     "android"
   ],
-  "author": "PBK-B",
+  "author": "yangdong-wuye",
   "license": "ISC",
   "peerDependencies": {
     "react": "^16.8.1",
