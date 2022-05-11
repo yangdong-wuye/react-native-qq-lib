@@ -16,7 +16,7 @@
     "ios",
     "android"
   ],
-  "author": "yangdong-wuye",
+  "author": "yangdong <wuye_666@163.com> (https://github.com/yangdong-wuye)",
   "license": "ISC",
   "peerDependencies": {
     "react": "^16.8.1",
