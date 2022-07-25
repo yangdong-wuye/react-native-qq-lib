@@ -4,8 +4,6 @@
  * @FilePath: /react-native-qq-lib/index.d.ts
  */
 
-import React from "react";
-
 export type QQLibShareType = "news" | "text" | "image";
 
 export interface QQLibSharePropTypes {
@@ -28,6 +26,7 @@ export interface QQLibShareImagePropTypes extends QQLibSharePropTypes {
   imageLocalUrl: string;
 }
 
+declare const init: () => Promise<boolean>;
 declare const isQQInstalled: () => Promise<boolean>;
 declare const isQQSupportApi: () => Promise<boolean>;
 declare const login: (scopes?: string) => Promise<any>;
@@ -46,6 +45,7 @@ declare const shareToQzone: (
 declare const logout: () => {};
 
 export {
+  init,
   isQQInstalled,
   isQQSupportApi,
   login,

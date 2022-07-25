@@ -48,7 +48,7 @@ RCT_EXPORT_MODULE();
     self = [super init];
     if (self) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleOpenURL:) name:@"RCTOpenURLNotification" object:nil];
-        [self _autoRegisterAPI];
+        // [self _autoRegisterAPI];
     }
     return self;
 }
@@ -67,6 +67,29 @@ RCT_EXPORT_MODULE();
     NSDictionary *userInfo = note.userInfo;
     NSString *url = userInfo[@"url"];
 	return [QQApiInterface handleOpenUniversallink:[NSURL URLWithString:url] delegate:self] || [QQApiInterface handleOpenURL:[NSURL URLWithString:url] delegate:self];;
+}
+
+RCT_EXPORT_METHOD(init:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+{
+    NSString *appId = nil;
+    NSArray *list = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"CFBundleURLTypes"];
+    for (NSDictionary *item in list) {
+        NSString *name = item[@"CFBundleURLName"];
+        if ([name isEqualToString:@"qq"]) {
+            NSArray *schemes = item[@"CFBundleURLSchemes"];
+            if (schemes.count > 0)
+            {
+                appId = [schemes[0] substringFromIndex:@"tencent".length];
+                break;
+            }
+        }
+    }
+    if (appId != nil) {
+         _qqapi = [[TencentOAuth alloc] initWithAppId:appId andDelegate:self];
+        resolve([NSNumber numberWithBool:YES]);
+    } else {
+        self.rejectBlock(@"error", @"error", nil);  
+    }
 }
 
 RCT_EXPORT_METHOD(isQQInstalled:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
@@ -216,26 +239,6 @@ RCT_EXPORT_METHOD(logout)
     else {
         reject(@"-1",INVOKE_FAILED,nil);
     }
-}
-
-
-- (void)_autoRegisterAPI
-{
-    NSString *appId = nil;
-    NSArray *list = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"CFBundleURLTypes"];
-    for (NSDictionary *item in list) {
-        NSString *name = item[@"CFBundleURLName"];
-        if ([name isEqualToString:@"qq"]) {
-            NSArray *schemes = item[@"CFBundleURLSchemes"];
-            if (schemes.count > 0)
-            {
-                appId = [schemes[0] substringFromIndex:@"tencent".length];
-                break;
-            }
-        }
-    }
-    _qqapi = [[TencentOAuth alloc] initWithAppId:appId andDelegate:self];
-
 }
 
 #pragma mark - qq delegate

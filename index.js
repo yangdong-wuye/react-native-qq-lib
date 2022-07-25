@@ -1,7 +1,7 @@
 /**
  * Created by Yun on 2015-12-12.
  */
-import { NativeModules, NativeEventEmitter } from "react-native";
+import { NativeModules, NativeEventEmitter, Platform } from "react-native";
 
 const { QQAPI } = NativeModules;
 
@@ -57,6 +57,10 @@ QQAPIEmitter.addListener("QQ_Resp", (resp) => {
   callback && callback(resp);
 });
 
+export function init() {
+  return QQAPI.init();
+}
+
 export function login(scopes) {
   return QQAPI.login(scopes).then(() => waitForResponse("QQAuthorizeResponse"));
 }
@@ -74,7 +78,3 @@ export function shareToQzone(data = {}) {
 export function logout() {
   QQAPI.logout();
 }
-
-
-
-

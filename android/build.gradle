@@ -1,3 +1,16 @@
+buildscript {
+    if (project == rootProject) {
+        repositories {
+            google()
+            jcenter()
+        }
+
+        dependencies {
+            classpath 'com.android.tools.build:gradle:3.5.3'
+        }
+    }
+}
+
 apply plugin: 'com.android.library'
 
 def safeExtGet(prop, fallback) {
@@ -5,30 +18,42 @@ def safeExtGet(prop, fallback) {
 }
 
 android {
-  compileSdkVersion safeExtGet('compileSdkVersion', 30)
-  buildToolsVersion safeExtGet('buildToolsVersion', '29.0.2')
-  defaultConfig {
-    minSdkVersion safeExtGet('minSdkVersion', 26)
-    targetSdkVersion safeExtGet('targetSdkVersion', 29)
-    versionCode 1
-    versionName "1.0"
-    ndk {
-      abiFilters "armeabi-v7a", "x86"
+    compileSdkVersion safeExtGet('compileSdkVersion', 31)
+    buildToolsVersion safeExtGet('buildToolsVersion', '29.0.2')
+    defaultConfig {
+        minSdkVersion safeExtGet('minSdkVersion', 26)
+        targetSdkVersion safeExtGet('targetSdkVersion', 29)
+        versionCode 1
+        versionName "1.0.0"
+        manifestPlaceholders = [QQ_APPID: '${QQ_APPID}']
     }
-    manifestPlaceholders = [QQ_APPID: '${QQ_APPID}']
-  }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    lintOptions {
+        disable 'GradleCompatible'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 repositories {
+    mavenLocal()
     maven {
         // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-        url "$rootDir/../node_modules/react-native/android"
+        url("$rootDir/../node_modules/react-native/android")
     }
+    google()
+    jcenter()
 }
 
 dependencies {
-  compile 'com.facebook.react:react-native:+'
-  // api files('libs/open_sdk_r8353806_lite.jar')
-  api files('libs/open_sdk_3.5.4.11_r3f56456_lite.jar')
+    implementation "com.facebook.react:react-native:+"
+    api files('libs/open_sdk.jar')
 }
 

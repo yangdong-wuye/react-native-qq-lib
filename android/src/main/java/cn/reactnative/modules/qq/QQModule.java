@@ -10,6 +10,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
@@ -46,8 +47,8 @@ public class QQModule extends ReactContextBaseJavaModule implements IUiListener,
 
     public final String TAG = "tzmax";
     private Context mContext;
-    private String appId;
     private Tencent api;
+    private String appId;
     private final static String INVOKE_FAILED = "QQ API invoke returns false.";
     private boolean isLogin;
 
@@ -71,49 +72,20 @@ public class QQModule extends ReactContextBaseJavaModule implements IUiListener,
     public QQModule(ReactApplicationContext context) {
         super(context);
         mContext = context;
-        ApplicationInfo appInfo = null;
-        try {
-            appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new Error(e);
-        }
-        if (!appInfo.metaData.containsKey("QQ_APPID")) {
-            throw new Error("meta-data QQ_APPID not found in AndroidManifest.xml");
-        }
-        this.appId = appInfo.metaData.get("QQ_APPID").toString();
     }
 
     @Override
     public void initialize() {
         super.initialize();
-
-        if (api == null) {
-            String packageNames = null;
-            try {
-                PackageInfo info = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
-                packageNames = info.packageName;
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            if(packageNames != null) {
-                Log.d(TAG, "packageNames: " + packageNames);
-                api = Tencent.createInstance(appId, getReactApplicationContext().getApplicationContext(), packageNames + ".fileprovider");
-            } else {
-                api = Tencent.createInstance(appId, getReactApplicationContext().getApplicationContext());
-            }
-        }
         getReactApplicationContext().addActivityEventListener(this);
     }
 
     @Override
     public void onCatalystInstanceDestroy() {
-
         if (api != null) {
             api = null;
         }
         getReactApplicationContext().removeActivityEventListener(this);
-
         super.onCatalystInstanceDestroy();
     }
 
@@ -123,11 +95,48 @@ public class QQModule extends ReactContextBaseJavaModule implements IUiListener,
     }
 
     @ReactMethod
+    public void init(Promise promise) {
+        if (api == null) {
+            try {
+                PackageInfo info = mContext
+                        .getPackageManager()
+                        .getPackageInfo(mContext.getPackageName(), 0);
+                String packageNames = info.packageName;
+                ApplicationInfo appInfo = mContext
+                                .getPackageManager()
+                                .getApplicationInfo(
+                                        mContext.getPackageName(),
+                                        PackageManager.GET_META_DATA
+                                );
+                if (!appInfo.metaData.containsKey("QQ_APPID")) {
+                    promise.reject(new Error("meta-data QQ_APPID not found in AndroidManifest.xml"));
+                } else {
+                    this.appId = appInfo.metaData.get("QQ_APPID").toString();
+                    Tencent.setIsPermissionGranted(true);
+                    if (packageNames != null) {
+                        api = Tencent.createInstance(
+                                this.appId ,
+                                getReactApplicationContext().getApplicationContext(),
+                                packageNames + ".fileprovider"
+                        );
+                    } else {
+                        api = Tencent.createInstance(this.appId ,getReactApplicationContext().getApplicationContext());
+                    }
+                    promise.resolve(true);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                promise.reject(e);
+            }
+        }
+    }
+
+    @ReactMethod
     public void isQQInstalled(Promise promise) {
         if (api.isSupportSSOLogin(getCurrentActivity())) {
             promise.resolve(true);
         } else {
-            promise.reject("not installed");
+            promise.reject(new Error("not installed"));
         }
     }
 
@@ -136,7 +145,7 @@ public class QQModule extends ReactContextBaseJavaModule implements IUiListener,
         if (api.isSupportSSOLogin(getCurrentActivity())) {
             promise.resolve(true);
         } else {
-            promise.reject("not support");
+            promise.reject(new Error("not support"));
         }
     }
 
